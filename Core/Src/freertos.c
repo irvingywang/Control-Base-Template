@@ -32,7 +32,6 @@
 #include "M3508_Motor.h"
 #include "GM6020_Motor.h"
 #include "M2006_Motor.h"
-#include "Super_Capacitor.h"
 #include "Robot_Control.h"
 #include "MPU6050_IMU.h"
 #include "WT901_IMU.h"
@@ -40,7 +39,6 @@
 #include "Referee_System.h"
 #include "Buzzer.h"
 #include "Jetson_Tx2.h"
-#include "User_Interface.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -235,11 +233,8 @@ void General_Init(void const * argument)
 	DR16_Func.DR16_USART_Receive_DMA(&huart1);
 	Tx2_Func.Jetson_Tx2_Initialization();
 	Referee_System_Func.Referee_UART_Receive_Interrupt(&huart6, Referee_System.Buffer, REFEREE_BUFFER_LEN);
-	UI_Initialization();
 	CAN_Func.CAN_IT_Init(&hcan1, CAN1_Type);
   CAN_Func.CAN_IT_Init(&hcan2, CAN2_Type);
-	Gimbal_Func.Gimbal_Init();
-	Shooting_Func.Shooting_Init();
 	vTaskDelete(NULL);
   /* USER CODE END General_Init */
 }
@@ -281,14 +276,6 @@ void CAN1_Rec(void const * argument)
   {
     xQueueReceive(CAN1_ReceiveHandle, &CAN_Export_Data, portMAX_DELAY);
 		ID = CAN_Export_Data.CAN_RxHeader.StdId;
-		if(ID == SUPERCAP_ID)
-			Super_Capacitor_Func.Super_Capacitor_Get_Data(CAN_Export_Data);
-		else if(ID >= M3508_CHASSIS_START_ID && ID <= M3508_CHASSIS_END_ID)
-			M3508_Func.M3508_Chassis_Get_Data(CAN_Export_Data);
-		else if(ID == GM6020_YAW_ID)
-			GM6020_Func.GM6020_Yaw_Get_Data(CAN_Export_Data);
-		else if(ID == GM6020_PITCH_ID)
-			GM6020_Func.GM6020_Pitch_Get_Data(CAN_Export_Data);
 		Monitor_CAN1.Info_Update_Frame++;
   }
   /* USER CODE END CAN1_Rec */
@@ -311,10 +298,6 @@ void CAN2_Rec(void const * argument)
   {
 		xQueueReceive(CAN2_ReceiveHandle, &CAN_Export_Data, portMAX_DELAY);
 		ID = CAN_Export_Data.CAN_RxHeader.StdId;
-    if(ID == M3508_FRIC_WHEEL_LEFT_ID || ID == M3508_FRIC_WHEEL_RIGHT_ID)
-			M3508_Func.M3508_Fric_Wheel_Get_Data(CAN_Export_Data);
-		else if(ID == M2006_TRIGGER_ID)
-			M2006_Func.M2006_Trigger_Get_Data(CAN_Export_Data);
 		
 		Monitor_CAN2.Info_Update_Frame++;
   }
@@ -343,88 +326,10 @@ void Robot_Control(void const * argument)
   /* USER CODE END Robot_Control */
 }
 
-/* USER CODE BEGIN Header_UI_Draw */
-/**
-* @brief Function implementing the Task_UI thread.
-* @param argument: Not used
-* @retval None
-*/
 /* USER CODE END Header_UI_Draw */
 void UI_Draw(void const * argument)
 {
-  /* USER CODE BEGIN UI_Draw */
-	osDelay (5000);
-  portTickType xLastWakeTime;
-  xLastWakeTime = xTaskGetTickCount();
-  const TickType_t TimeIncrement = pdMS_TO_TICKS(100);
-  /* Infinite loop */
-  for(;;)
-  {
-				if(UI.Initialized_Flag == 0)
-				{
-							if(Referee_Robot_State.ID == 5)
-				{
-					UI.Pilot_ID = UI_Data_CilentID_RStandard3;
-					UI.Robot_ID = UI_Data_RobotID_RStandard3;
-				}
-				else if(Referee_Robot_State.ID == 105)
-				{
-					UI.Pilot_ID = UI_Data_CilentID_BStandard3;
-					UI.Robot_ID = UI_Data_RobotID_BStandard3;
-				}
-			UI_AimingSystem();
-			UI_GuidingSystem();
-			UI_TextSystem_Init();
-			UI.Initialized_Flag = 1;
-		}
-		osDelay (1000);
-//		memcpy (TextSystem.Text, "A_Test", 6);
-//		TextSystem.TextNumber = 6;
-//		UI_AutoText_Update();
-		switch(Chassis.Current_Mode)
-		{
-			case(Follow_Gimbal):
-				memcpy (TextSystem.Text, "FLGB", 4);
-				break;
-			case(Spin_Top):
-				memcpy (TextSystem.Text, "SPIN", 4);
-				break;
-			default:
-				memcpy (TextSystem.Text, "FLGB", 4);
-				break;
-		}
-		TextSystem.TextNumber = 4;
-		UI_StateText_Update();
-		
-		
-		if(Shooting.Fric_Wheel.Turned_On)
-		{
-			memcpy (TextSystem.Text, "FRIC ON", 7);
-			TextSystem.TextNumber = 7;
-			UI_AutoText_Update();
-		}
-		else if(Shooting.Fric_Wheel.Turned_On == 0)
-		{
-			memcpy (TextSystem.Text, "FRIC OFF", 8);
-			TextSystem.TextNumber = 8;
-			UI_AutoText_Update();
-		}
-		
-//		memcpy (TextSystem.Text, "A_Test2", 7);
-//		TextSystem.TextNumber = 7;
-//		UI_AutoText_Update();
-//		
-//		memcpy (TextSystem.Text, "C_Test2", 7);
-//		TextSystem.TextNumber = 7;
-//		UI_SuperCapText_Update();
-//		
-//		memcpy (TextSystem.Text, "S_Test2", 7);
-//		TextSystem.TextNumber = 7;
-//		UI_StateText_Update();
-		
-		vTaskDelayUntil(&xLastWakeTime, TimeIncrement);
-  /* USER CODE END UI_Draw */
-	}
+	
 }
 
 /* Private application code --------------------------------------------------*/

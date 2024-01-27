@@ -14,7 +14,6 @@
 
 #include "CRC_Verification.h"
 #include "dma.h"
-#include "Shooting_Control.h"
 #include "usart.h"
 #include <stdint.h>
 #include <stdbool.h>

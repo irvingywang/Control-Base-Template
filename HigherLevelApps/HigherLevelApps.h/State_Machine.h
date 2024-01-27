@@ -16,8 +16,6 @@
 #include "GM6020_Motor.h"
 #include "M2006_Motor.h"
 #include "Robot_Control.h"
-#include "Shooting_Control.h"
-#include "Super_Capacitor.h"
 
 #define State_Machine_Func_GroundInit \
 {																			\

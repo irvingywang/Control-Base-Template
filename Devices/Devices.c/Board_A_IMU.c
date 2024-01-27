@@ -10,6 +10,7 @@
  */
 
 #include "Board_A_IMU.h"
+#include "MPU6050_IMU.h"
 
 #define BOARD_A_IMU_SPI hspi5 
 #define SPI_NSS_LOW HAL_GPIO_WritePin(GPIOF, GPIO_PIN_6, GPIO_PIN_RESET)

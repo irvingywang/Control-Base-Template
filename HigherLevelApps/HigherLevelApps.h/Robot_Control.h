@@ -11,10 +11,7 @@
 #ifndef __ROBOT_CONTROL_H
 #define __ROBOT_CONTROL_H
 
-#include "Chassis_Control.h"
-#include "Gimbal_Control.h"
 #include "State_Machine.h"
-#include "Shooting_Control.h"
 #include "Jetson_Tx2.h"
 #include "Buzzer.h"
 #include "Referee_System.h"
