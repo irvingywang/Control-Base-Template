@@ -62,235 +62,31 @@ typedef struct
 } PID_Func_t;
 
 /*
-Use #define to create Init
+Use #define to create PIDInit macros here
+
+ex:
+#define PID_sample    
+	{                 
+			0,        \\ Target_Value
+			0,        \\ Measured_Value
+			0,        \\ Error
+			0,        \\ Prev_Error
+			0,        \\ Prev_Prev_Error
+			2.0f,     \\ Kp
+			0.05f,    \\ Ki
+			0,        \\ Kd
+			0,        \\ P_Out
+			0,        \\ I_Out
+			0,        \\ D_Out
+			0,        \\ Output
+			16384.0f, \\ Output_Max
+			1000.0f   \\ I_Out_Max
+	}
 */
-#define Chassis_Angle_PIDInit \
-	{                         \
-		0,                    \
-			0,                \
-			0,                \
-			0,                \
-			0,                \
-			6.0f,             \
-			0,                \
-			250.0f,           \
-			0,                \
-			0,                \
-			0,                \
-			0,                \
-			10.0f,            \
-			0,                \
-	}
 
-#define Chassis_Speed_PIDInit \
-	{                         \
-		0,                    \
-			0,                \
-			0,                \
-			0,                \
-			0,                \
-			2.0f,             \
-			0.05f,            \
-			0,                \
-			0,                \
-			0,                \
-			0,                \
-			0,                \
-			16384.0f,         \
-			1000.0f,          \
-	}
-
-#define Fric_Wheel_PIDInit \
-	{                      \
-		0,                 \
-			0,             \
-			0,             \
-			0,             \
-			0,             \
-			20.0f,         \
-			2.0f,          \
-			0,             \
-			0,             \
-			0,             \
-			0,             \
-			0,             \
-			16384.0f,      \
-			5000.0f,       \
-	}
-
-#define Yaw_Angle_PIDInit \
-	{                     \
-		0,                \
-			0,            \
-			0,            \
-			0,            \
-			0,            \
-			600.0f,       \
-			0,            \
-			60000.0f,     \
-			0,            \
-			0,            \
-			0,            \
-			0,            \
-			28000.0f,     \
-			0,            \
-	}
-
-#define Pitch_Angle_PIDInit \
-	{                       \
-		0,                  \
-			0,              \
-			0,              \
-			0,              \
-			0,              \
-			4.0f,           \
-			0,              \
-			30.0f,          \
-			0,              \
-			0,              \
-			0,              \
-			0,              \
-			3000.0f,        \
-			0,              \
-	}
-
-#define Pitch_Speed_PIDInit \
-	{                       \
-		0,                  \
-			0,              \
-			0,              \
-			0,              \
-			0,              \
-			400.0f,         \
-			0,              \
-			0,              \
-			0,              \
-			0,              \
-			0,              \
-			0,              \
-			28000.0f,       \
-			4000.0f,        \
-	}
-
-#define Trigger_Angle_PIDInit \
-	{                         \
-		0,                    \
-			0,                \
-			0,                \
-			0,                \
-			0,                \
-			4.0f,             \
-			0,                \
-			50.0f,            \
-			0,                \
-			0,                \
-			0,                \
-			0,                \
-			6000.0f,          \
-			0,                \
-	}
-
-#define Trigger_Speed_PIDInit \
-	{                         \
-		0,                    \
-			0,                \
-			0,                \
-			0,                \
-			0,                \
-			8.0f,             \
-			0,                \
-			0,                \
-			0,                \
-			0,                \
-			0,                \
-			0,                \
-			10000.0f,         \
-			0,                \
-	}
-
-#define AutoAim_Pitch_Angle_PIDInit \
-	{                               \
-		0,                          \
-			0,                      \
-			0,                      \
-			0,                      \
-			0,                      \
-			50.0f,                  \
-			0,                      \
-			500.0f,                 \
-			0,                      \
-			0,                      \
-			0,                      \
-			0,                      \
-			10000.0f,               \
-			0,                      \
-	}
-
-#define AutoAim_Pitch_Speed_PIDInit \
-	{                               \
-		0,                          \
-			0,                      \
-			0,                      \
-			0,                      \
-			0,                      \
-			9.1f,                   \
-			0.09f,                  \
-			0,                      \
-			0,                      \
-			0,                      \
-			0,                      \
-			0,                      \
-			28000.0f,               \
-			9000.0f,                \
-	}
-
-#define AutoAim_Yaw_Angle_PIDInit \
-	{                             \
-		0,                        \
-			0,                    \
-			0,                    \
-			0,                    \
-			0,                    \
-			50.0f,                \
-			0,                    \
-			500.0f,               \
-			0,                    \
-			0,                    \
-			0,                    \
-			0,                    \
-			10000.0f,             \
-			0,                    \
-	}
-
-#define AutoAim_Yaw_Speed_PIDInit \
-	{                             \
-		0,                        \
-			0,                    \
-			0,                    \
-			0,                    \
-			0,                    \
-			12.0f,                \
-			0,                    \
-			0.05f,                \
-			0,                    \
-			0,                    \
-			0,                    \
-			0,                    \
-			28000.0f,             \
-			9000.0f,              \
-	}
+/*
+remember to extern them here
+*/
 extern PID_Func_t PID_Func;
-extern PID_t Chassis_Angle_PID;
-extern PID_t Chassis_Speed_PID;
-extern PID_t Fric_Wheel_PID;
-extern PID_t Yaw_Angle_PID;
-extern PID_t Pitch_Angle_PID;
-extern PID_t Pitch_Speed_PID;
-extern PID_t Trigger_Angle_PID;
-extern PID_t Trigger_Speed_PID;
-extern PID_t AutoAim_Pitch_Angle_PID;
-extern PID_t AutoAim_Pitch_Speed_PID;
-extern PID_t AutoAim_Yaw_Angle_PID;
-extern PID_t AutoAim_Yaw_Speed_PID;
 
 #endif

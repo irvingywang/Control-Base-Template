@@ -14,9 +14,9 @@
 #include "User_Defined_Math.h"
 
 #define Ramp_Calc_Func_GroundInit	\
-		{															\
-				&Ramp,										\
-						&Clear_Ramp,					\
+		{							\
+				&Ramp,				\
+				&Clear_Ramp,		\
 		}
 
 typedef struct

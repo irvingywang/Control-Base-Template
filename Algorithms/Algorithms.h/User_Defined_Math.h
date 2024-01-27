@@ -12,7 +12,6 @@
 #define __USER_DEFINED_MATH_H
 
 #include "GM6020_Motor.h"
-#include "Chassis_Control.h"
 #include <stdio.h>
 
 #define DEG_TO_RAD(DEG) (DEG * 0.0174532925199432957692369076848f)
