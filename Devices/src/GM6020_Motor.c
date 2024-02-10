@@ -14,11 +14,10 @@
 #include "Motor.h"
 
 void GM6020_Get_Data(CAN_Export_Data_t RxMessage, Motor_Container_t *motor_container);
-void GM6020_Check(Motor_Container_t *motor_container);
 void GM6020_Send_Data(int16_t Pitch_Output, int16_t Yaw_Output);
 
-GM6020_Func_t GM6020_Func = GM6020_Func_Init;
-#undef GM6020_Func_GroundInit
+// GM6020_Func_t GM6020_Func = GM6020_Func_Init;
+#undef GM6020_Func_Init
 
 void GM6020_Get_Data(CAN_Export_Data_t RxMessage, Motor_Container_t *motor_container)
 {
@@ -39,13 +38,4 @@ void GM6020_Get_Data(CAN_Export_Data_t RxMessage, Motor_Container_t *motor_conta
 void GM6020_Send_Data(int16_t Pitch_Output, int16_t Yaw_Output)
 {
 	CAN_Func.CAN_0x2FF_Send_Data(&hcan1, 0, Pitch_Output, Yaw_Output, 0);
-}
-
-void GM6020_Check(Motor_Container_t *motor_container)
-{
-	if (motor_container->info_update_frame < 1)
-		motor_container->offline_flag = 1;
-	else
-		motor_container->offline_flag = 0;
-	motor_container->info_update_frame = 0;
 }

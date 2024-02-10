@@ -4,102 +4,37 @@
  * @brief M3508 communication
  * @version 1.0
  * @date 2022-07-08
- * 
+ *
  * @copyright Copyright (c) 2022
- * 
+ *
  */
 #include "M3508_Motor.h"
 #include <stdio.h>
+#include "Motor.h"
 
-Motor_Init_t M3508_Chassis[4];
-Motor_Init_t M3508_Fric_Wheel[2];
+void M3508_Get_Data(CAN_Export_Data_t RxMessage, Motor_Container_t *motor);
+void M3508_Send_Data(int16_t Motor_1_Current, int16_t Motor_2_Current, int16_t Motor_3_Current, int16_t Motor_4_Current);
 
-void M3508_Chassis_Get_Data(CAN_Export_Data_t RxMessage);
-void M3508_Chassis_Send_Data(int16_t Motor_1_Current,int16_t Motor_2_Current,int16_t Motor_3_Current,int16_t Motor_4_Current);
-void M3508_Fric_Wheel_Get_Data(CAN_Export_Data_t RxMessage);
-void M3508_Fric_Wheel_Send_Data(int16_t Fric_Wheel_Left_Current,int16_t Fric_Wheel_Right_Current);
-void Check_M3508_Chassis(void);
-void Check_M3508_Fric_Wheel(void);
+// M3508_Func_t M3508_Func = M3508_Func_Init;
+// #undef M3508_Func_Init
 
-
-M3508_Func_t M3508_Func = M3508_Func_GroundInit;
-#undef M3508_Func_GroundInit
-
-//Obtain chassis data from CAN
-void M3508_Chassis_Get_Data(CAN_Export_Data_t RxMessage)
+void M3508_Get_Data(CAN_Export_Data_t RxMessage, Motor_Container_t *motor_container)
 {
-	uint8_t ID;
-  ID = (uint8_t)(RxMessage.CAN_RxHeader.StdId - M3508_CHASSIS_START_ID);
-	
-	M3508_Chassis[ID].prev_angle = M3508_Chassis[ID].actual_angle;
-  M3508_Chassis[ID].actual_angle = (int16_t)(RxMessage.CANx_Export_RxMessage[0] << 8 | RxMessage.CANx_Export_RxMessage[1]);
-  M3508_Chassis[ID].actual_speed = (int16_t)(RxMessage.CANx_Export_RxMessage[2] << 8 | RxMessage.CANx_Export_RxMessage[3]);
-  M3508_Chassis[ID].actual_current = (int16_t)(RxMessage.CANx_Export_RxMessage[4] << 8 | RxMessage.CANx_Export_RxMessage[5]);
-  M3508_Chassis[ID].temperature = RxMessage.CANx_Export_RxMessage[6];
-	if((M3508_Chassis[ID].actual_angle - M3508_Chassis[ID].prev_angle) < -6500 )
-		M3508_Chassis[ID].turn_count++;
-	else if((M3508_Chassis[ID].actual_angle - M3508_Chassis[ID].prev_angle) > 6500)
-		M3508_Chassis[ID].turn_count--;
-	M3508_Chassis[ID].total_angle = M3508_Chassis[ID].actual_angle + (M3508_MECH_ANGLE_MAX * M3508_Chassis[ID].turn_count);
-  M3508_Chassis[ID].Info_Update_Frame++;
+	motor_container->prev_angle = motor_container->actual_angle;
+	motor_container->actual_angle = (int16_t)(RxMessage.CANx_Export_RxMessage[0] << 8 | RxMessage.CANx_Export_RxMessage[1]);
+	motor_container->actual_speed = (int16_t)(RxMessage.CANx_Export_RxMessage[2] << 8 | RxMessage.CANx_Export_RxMessage[3]);
+	motor_container->actual_current = (int16_t)(RxMessage.CANx_Export_RxMessage[4] << 8 | RxMessage.CANx_Export_RxMessage[5]);
+	motor_container->temperature = RxMessage.CANx_Export_RxMessage[6];
+	if ((motor_container->actual_angle - motor_container->prev_angle) < -6500)
+		motor_container->turn_count++;
+	else if ((motor_container->actual_angle - motor_container->prev_angle) > 6500)
+		motor_container->turn_count--;
+	motor_container->total_angle = motor_container->actual_angle + (M3508_MECH_ANGLE_MAX * motor_container->turn_count);
+	motor_container->info_update_frame++;
 }
 
-//Send chassis data through specified identifier
-void M3508_Chassis_Send_Data(int16_t Motor_1_Current,int16_t Motor_2_Current,int16_t Motor_3_Current,int16_t Motor_4_Current)
+// Send chassis data through specified identifier
+void M3508_Send_Data(int16_t Motor_1_Current, int16_t Motor_2_Current, int16_t Motor_3_Current, int16_t Motor_4_Current)
 {
-	CAN_Func.CAN_0x200_Send_Data(&hcan1,Motor_1_Current,Motor_2_Current,Motor_3_Current,Motor_4_Current);
-}
-
-//Obtain friction wheel data from CAN
-void M3508_Fric_Wheel_Get_Data(CAN_Export_Data_t RxMessage)
-{
-	switch(RxMessage.CAN_RxHeader.StdId)
-	{
-		case M3508_FRIC_WHEEL_LEFT_ID:
-			M3508_Fric_Wheel[0].actual_angle = (int16_t)(RxMessage.CANx_Export_RxMessage[0] << 8 | RxMessage.CANx_Export_RxMessage[1]);
-			M3508_Fric_Wheel[0].actual_speed = (int16_t)(RxMessage.CANx_Export_RxMessage[2] << 8 | RxMessage.CANx_Export_RxMessage[3]);
-			M3508_Fric_Wheel[0].actual_current = (int16_t)(RxMessage.CANx_Export_RxMessage[4] << 8 | RxMessage.CANx_Export_RxMessage[5]);
-			M3508_Fric_Wheel[0].temperature = RxMessage.CANx_Export_RxMessage[6];
-		
-			M3508_Fric_Wheel[0].Info_Update_Frame++;
-			break;
-		case M3508_FRIC_WHEEL_RIGHT_ID:
-			M3508_Fric_Wheel[1].actual_angle = (int16_t)(RxMessage.CANx_Export_RxMessage[0] << 8 | RxMessage.CANx_Export_RxMessage[1]);
-			M3508_Fric_Wheel[1].actual_speed = (int16_t)(RxMessage.CANx_Export_RxMessage[2] << 8 | RxMessage.CANx_Export_RxMessage[3]);
-			M3508_Fric_Wheel[1].actual_current = (int16_t)(RxMessage.CANx_Export_RxMessage[4] << 8 | RxMessage.CANx_Export_RxMessage[5]);
-			M3508_Fric_Wheel[1].temperature = RxMessage.CANx_Export_RxMessage[6];
-		
-			M3508_Fric_Wheel[1].Info_Update_Frame++;
-			break;
-	}
-}
-
-//Send friction wheel data through specified identifier
-void M3508_Fric_Wheel_Send_Data(int16_t Fric_Wheel_Left_Current,int16_t Fric_Wheel_Right_Current)
-{
-	CAN_Func.CAN_0x200_Send_Data(&hcan2,Fric_Wheel_Left_Current,Fric_Wheel_Right_Current,0,0);
-}
-
-void Check_M3508_Chassis(void)
-{
-	for(int i = 0; i < 4; i++)
-	{
-		if(M3508_Chassis[i].Info_Update_Frame < 1)
-			M3508_Chassis[i].offline_flag = 1;
-		else
-			M3508_Chassis[i].offline_flag = 0;
-		M3508_Chassis[i].Info_Update_Frame = 0;
-	}
-}
-
-void Check_M3508_Fric_Wheel(void)
-{
-	for(int i = 0; i < 2; i++)
-	{
-		if(M3508_Fric_Wheel[i].Info_Update_Frame < 1)
-			M3508_Fric_Wheel[i].offline_flag = 1;
-		else
-			M3508_Fric_Wheel[i].offline_flag = 0;
-		M3508_Fric_Wheel[i].Info_Update_Frame = 0;
-	}
+	CAN_Func.CAN_0x200_Send_Data(&hcan1, Motor_1_Current, Motor_2_Current, Motor_3_Current, Motor_4_Current);
 }

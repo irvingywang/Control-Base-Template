@@ -19,7 +19,7 @@ typedef enum Motor_Type_e {
     GM6020,
     M2006,
     M3508
-} Motor_Type;
+} Motor_Type_e;
 
 /**
 general struct containing motor type, id, and motor data
@@ -28,7 +28,7 @@ typedef struct Motor_Container_t
 {
     /* data */
     int can_ID;
-    Motor_Type motor_type;    
+    Motor_Type_e motor_type;
 
     // Motor Data
     int16_t actual_angle;
@@ -47,7 +47,8 @@ typedef struct Motor_Container_t
     uint8_t offline_flag;
 } Motor_Container_t;
 
-Motor_Container_t* new_motor(int can_ID, Motor_Type motor_type);
-void getData(CAN_Export_Data_t RxMessage, Motor_Container_t *motor);
+Motor_Container_t* new_motor(int can_ID, Motor_Type_e motor_type);
+void Motor_Get_Data(CAN_Export_Data_t RxMessage, Motor_Container_t *motor);
+int Motor_Check_Status(Motor_Container_t *motor_container);
 
 #endif

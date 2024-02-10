@@ -20,20 +20,23 @@
 #define GM6020_MECH_ANGLE_MAX 8192.0f      // GM6020 maximum mechanical angle
 #define GM6020_ANGLE_CONVERT 0.0439453125f //(360/GM6020_MECH_ANGLE_MAX)
 
-#define GM6020_Func_Init    \
-  {                               \
-    &GM6020_Get_Data,             \
-    &GM6020_Send_Data, \
-    &GM6020_Check             \
-  }
+// #define GM6020_Func_Init    \
+//   {                               \
+//     &GM6020_Get_Data,             \
+//     &GM6020_Send_Data, \
+//     &GM6020_Check_Status             \
+//   }
 
-typedef struct
-{
-  void (*GM6020_Get_Data)(CAN_Export_Data_t RxMessage, Motor_Container_t *motor_container);
-  void (*GM6020_Send_Data)(int16_t Pitch_Output, int16_t Yaw_Output);
-  void (*GM6020_Check)(Motor_Container_t *motor_container);
-} GM6020_Func_t;
+void GM6020_Get_Data(CAN_Export_Data_t RxMessage, Motor_Container_t *motor_container);
+void GM6020_Send_Data(int16_t Pitch_Output, int16_t Yaw_Output);
 
-extern GM6020_Func_t GM6020_Func;
+// typedef struct
+// {
+//   void (*GM6020_Get_Data)(CAN_Export_Data_t RxMessage, Motor_Container_t *motor_container);
+//   void (*GM6020_Send_Data)(int16_t Trigger_Current);
+//   void (*GM6020_Check_Status)(Motor_Container_t *motor_container);
+// } GM6020_Func_t;
+
+// extern GM6020_Func_t GM6020_Func;
 
 #endif

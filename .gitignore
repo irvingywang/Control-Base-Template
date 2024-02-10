@@ -1,3 +1,4 @@
 MDK-ARM/*
 !MDK-ARM/Base_Template.uvprojx
 !MDK-ARM/startup_stm32f427xx.s
+.vscode/*
