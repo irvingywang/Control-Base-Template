@@ -25,7 +25,7 @@ void Board_A_IMU_Temp_Control_Init(void)
 
 void Board_A_IMU_Temp_Control(void)
 {
-	if(Board_A_IMU.Export_Data.Temperature < MPU6500_MAX_TEMP)
+	if(Board_A_IMU.Export_Data.temperature < MPU6500_MAX_TEMP)
 	{
 		__HAL_TIM_SetCompare(&htim3, TIM_CHANNEL_2, MPU6500_TEMP_MAX_PWM - 1); //Maximum pwm before temperature is reached
 	}

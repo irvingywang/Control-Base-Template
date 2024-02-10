@@ -48,9 +48,9 @@ void MPU6050_IMU_Init(void)
 	I2C_Write_Bytes(DEV_ADDR,	PWR_MGMT_1, 1, &Temp_Data);
 	
 	if(Check_Offline == 0x68)
-		MPU6050_IMU.Offline_Flag = 0;
+		MPU6050_IMU.offline_flag = 0;
 	else
-		MPU6050_IMU.Offline_Flag = 1;
+		MPU6050_IMU.offline_flag = 1;
 }
 
 void MPU6050_IMU_Calibrate(MPU6050_IMU_t *MPU6050_IMU)
@@ -96,7 +96,7 @@ void MPU6050_IMU_Read_Data(MPU6050_IMU_t *MPU6050_IMU)
 	MPU6050_IMU->Raw_Data.Ax = ((int16_t)Buffer[0] << 8) | Buffer[1];
 	MPU6050_IMU->Raw_Data.Ay = ((int16_t)Buffer[2] << 8) | Buffer[3];
 	MPU6050_IMU->Raw_Data.Az = ((int16_t)Buffer[4] << 8) | Buffer[5];
-	MPU6050_IMU->Raw_Data.Temperature = ((int16_t)Buffer[6]) << 8 | Buffer[7];
+	MPU6050_IMU->Raw_Data.temperature = ((int16_t)Buffer[6]) << 8 | Buffer[7];
 	MPU6050_IMU->Raw_Data.Gx = ((int16_t)Buffer[8] << 8) | Buffer[9];
 	MPU6050_IMU->Raw_Data.Gy = ((int16_t)Buffer[10] << 8) | Buffer[11];
 	MPU6050_IMU->Raw_Data.Gz = ((int16_t)Buffer[12] << 8) | Buffer[13];
@@ -107,7 +107,7 @@ void MPU6050_IMU_Read_Data(MPU6050_IMU_t *MPU6050_IMU)
 	MPU6050_IMU->Calc_Data.Gx = MPU6050_IMU->Raw_Data.Gx / 131.0f;
 	MPU6050_IMU->Calc_Data.Gy = MPU6050_IMU->Raw_Data.Gy / 131.0f;
 	MPU6050_IMU->Calc_Data.Gz = MPU6050_IMU->Raw_Data.Gz / 131.0f;
-	MPU6050_IMU->Calc_Data.Temperature = MPU6050_IMU->Raw_Data.Temperature / 340.0f + 36.53f;
+	MPU6050_IMU->Calc_Data.temperature = MPU6050_IMU->Raw_Data.temperature / 340.0f + 36.53f;
 	
 	if(MPU6050_IMU->Calibrated_Flag == 1)
 	{
@@ -137,12 +137,12 @@ void MPU6050_IMU_Calc_Angle(MPU6050_IMU_t *MPU6050_IMU)
 	MPU6050_IMU->Export_Data.Gyro_Yaw = MPU6050_IMU->Calc_Data.Gx / 6.0f;
 	MPU6050_IMU->Export_Data.Gyro_Pitch = MPU6050_IMU->Calc_Data.Gy / 6.0f;
 	MPU6050_IMU->Export_Data.Gyro_Roll = MPU6050_IMU->Calc_Data.Gz / 6.0f;
-	MPU6050_IMU->Export_Data.Temperature = MPU6050_IMU->Calc_Data.Temperature;
+	MPU6050_IMU->Export_Data.temperature = MPU6050_IMU->Calc_Data.temperature;
 	
 	if((MPU6050_IMU->Export_Data.Yaw - MPU6050_IMU->Export_Data.Prev_Yaw) < - 300)
-		MPU6050_IMU->Export_Data.Turn_Count++;
+		MPU6050_IMU->Export_Data.turn_count++;
 	else if((MPU6050_IMU->Export_Data.Yaw - MPU6050_IMU->Export_Data.Prev_Yaw) > 300)
-		MPU6050_IMU->Export_Data.Turn_Count--;
+		MPU6050_IMU->Export_Data.turn_count--;
 	
-	MPU6050_IMU->Export_Data.Total_Yaw = MPU6050_IMU->Export_Data.Yaw + 360.0f * MPU6050_IMU->Export_Data.Turn_Count;
+	MPU6050_IMU->Export_Data.Total_Yaw = MPU6050_IMU->Export_Data.Yaw + 360.0f * MPU6050_IMU->Export_Data.turn_count;
 }

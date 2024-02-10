@@ -37,7 +37,7 @@ typedef struct
 	uint8_t Super_Cap_On;
 	float Super_Cap_Accel_Rate;
 	uint16_t Info_Update_Frame;
-	uint8_t Offline_Flag;
+	uint8_t offline_flag;
 }Super_Capacitor_t;
 
 typedef struct

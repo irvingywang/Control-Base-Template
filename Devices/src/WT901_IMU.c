@@ -63,7 +63,7 @@ void WT901_IMU_Read_Data(WT901_IMU_t *WT901_IMU)
 	WT901_IMU->Raw_Data.Roll = ((int16_t)Buffer[18] << 8) | Buffer[19];
 	WT901_IMU->Raw_Data.Pitch = ((int16_t)Buffer[20] << 8) | Buffer[21];
 	WT901_IMU->Raw_Data.Yaw = ((int16_t)Buffer[22] << 8) | Buffer[23];
-	WT901_IMU->Raw_Data.Temperature = ((int16_t)Buffer[24]) << 8 | Buffer[25];
+	WT901_IMU->Raw_Data.temperature = ((int16_t)Buffer[24]) << 8 | Buffer[25];
 	
 	WT901_IMU->Calc_Data.Ax = WT901_IMU->Raw_Data.Ax / 32768.0f * 16.0f;
 	WT901_IMU->Calc_Data.Ay = WT901_IMU->Raw_Data.Ay / 32768.0f * 16.0f;
@@ -77,7 +77,7 @@ void WT901_IMU_Read_Data(WT901_IMU_t *WT901_IMU)
 	WT901_IMU->Calc_Data.Roll = WT901_IMU->Raw_Data.Roll / 32768.0f * 180.0f;
 	WT901_IMU->Calc_Data.Pitch = WT901_IMU->Raw_Data.Pitch / 32768.0f * 180.0f;
 	WT901_IMU->Calc_Data.Yaw = WT901_IMU->Raw_Data.Yaw / 32768.0f * 180.0f;
-	WT901_IMU->Calc_Data.Temperature = WT901_IMU->Raw_Data.Temperature / 100.0f;
+	WT901_IMU->Calc_Data.temperature = WT901_IMU->Raw_Data.temperature / 100.0f;
 }
 
 void ShortToChar(short sData,unsigned char cData[])

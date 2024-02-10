@@ -61,7 +61,7 @@ typedef struct
 			int16_t Yaw;
 			int16_t Pitch;
 			int16_t Roll;
-			int16_t Temperature;
+			int16_t temperature;
 		}Raw_Data;
 		
 		struct
@@ -78,7 +78,7 @@ typedef struct
 			float Yaw;
 			float Pitch;
 			float Roll;
-			float Temperature;
+			float temperature;
 		}Calc_Data;
     
 		struct
@@ -89,17 +89,17 @@ typedef struct
 						
 			float Prev_Yaw;
 			float Total_Yaw;
-			float Turn_Count;
+			float turn_count;
 			
 			float Gyro_Yaw;
 			float Gyro_Pitch;
 			float Gyro_Roll;
 			
-			float Temperature;
+			float temperature;
 		}Export_Data;
 		
 		uint8_t Check_Offline;
-		uint8_t Offline_Flag;
+		uint8_t offline_flag;
 } WT901_IMU_t;
 
 typedef struct

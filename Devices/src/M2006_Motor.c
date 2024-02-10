@@ -23,14 +23,14 @@ M2006_Func_t M2006_Func = M2006_Func_GroundInit;
 //Obatin trigger motor data from CAN
 void M2006_Trigger_Get_Data(CAN_Export_Data_t RxMessage)
 {
-	M2006_Trigger.Prev_Angle = M2006_Trigger.Actual_Angle;
-	M2006_Trigger.Actual_Angle = (int16_t)(RxMessage.CANx_Export_RxMessage[0] << 8 | RxMessage.CANx_Export_RxMessage[1]);
-  M2006_Trigger.Actual_Speed = (int16_t)(RxMessage.CANx_Export_RxMessage[2] << 8 | RxMessage.CANx_Export_RxMessage[3]);
-	if((M2006_Trigger.Actual_Angle - M2006_Trigger.Prev_Angle) < -6500 )
-		M2006_Trigger.Turn_Count++;
-	else if((M2006_Trigger.Actual_Angle - M2006_Trigger.Prev_Angle) > 6500)
-		M2006_Trigger.Turn_Count--;
-	M2006_Trigger.Total_Angle = M2006_Trigger.Actual_Angle + (M2006_MECH_ANGLE_MAX * M2006_Trigger.Turn_Count);
+	M2006_Trigger.prev_angle = M2006_Trigger.actual_angle;
+	M2006_Trigger.actual_angle = (int16_t)(RxMessage.CANx_Export_RxMessage[0] << 8 | RxMessage.CANx_Export_RxMessage[1]);
+  M2006_Trigger.actual_speed = (int16_t)(RxMessage.CANx_Export_RxMessage[2] << 8 | RxMessage.CANx_Export_RxMessage[3]);
+	if((M2006_Trigger.actual_angle - M2006_Trigger.prev_angle) < -6500 )
+		M2006_Trigger.turn_count++;
+	else if((M2006_Trigger.actual_angle - M2006_Trigger.prev_angle) > 6500)
+		M2006_Trigger.turn_count--;
+	M2006_Trigger.total_angle = M2006_Trigger.actual_angle + (M2006_MECH_ANGLE_MAX * M2006_Trigger.turn_count);
 	M2006_Trigger.Info_Update_Frame++;
 }
 
@@ -43,8 +43,8 @@ void M2006_Trigger_Send_Data(int16_t Trigger_Current)
 void Check_M2006_Trigger(void)
 {
 	if(M2006_Trigger.Info_Update_Frame < 1)
-		M2006_Trigger.Offline_Flag = 1;
+		M2006_Trigger.offline_flag = 1;
 	else
-		M2006_Trigger.Offline_Flag = 0;
+		M2006_Trigger.offline_flag = 0;
 	M2006_Trigger.Info_Update_Frame = 0;
 }

@@ -296,7 +296,7 @@ typedef __packed struct
 	}RFID;
 		
 	uint16_t Info_Update_Frame;
-	uint8_t Offline_Flag;
+	uint8_t offline_flag;
 }Referee_System_t;
 
 typedef struct

@@ -160,11 +160,11 @@ void Check_CAN(void)
     {
         if (Monitor_CAN[i]->Info_Update_Frame < 1)
         {
-            Monitor_CAN[i]->Offline_Flag = 1;
+            Monitor_CAN[i]->offline_flag = 1;
         }
         else
         {
-            Monitor_CAN[i]->Offline_Flag = 0;
+            Monitor_CAN[i]->offline_flag = 0;
         }
         Monitor_CAN[i]->Info_Update_Frame = 0;
     }

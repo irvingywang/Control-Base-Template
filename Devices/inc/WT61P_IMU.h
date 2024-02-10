@@ -65,7 +65,7 @@ typedef struct
 			int16_t Gx;
 			int16_t Gy;
 			int16_t Gz;
-			int16_t Temperature;
+			int16_t temperature;
 		}Raw_Data;
 		
 		struct
@@ -86,7 +86,7 @@ typedef struct
 			float Gx;
 			float Gy;
 			float Gz;
-			float Temperature;
+			float temperature;
 		}Calc_Data;
     
 		struct
@@ -97,13 +97,13 @@ typedef struct
 						
 			float Prev_Yaw;
 			float Total_Yaw;
-			float Turn_Count;
+			float turn_count;
 			
 			float Gyro_Yaw;
 			float Gyro_Pitch;
 			float Gyro_Roll;
 			
-			float Temperature;
+			float temperature;
 		}Export_Data;
 		
 		struct
@@ -114,7 +114,7 @@ typedef struct
 		}Sample;
 		
 		uint8_t Calibrated_Flag;
-		uint8_t Offline_Flag;
+		uint8_t offline_flag;
 } MPU6050_IMU_t;
 
 typedef struct

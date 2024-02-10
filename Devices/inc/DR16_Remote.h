@@ -116,7 +116,7 @@ typedef struct
 	} Keyboard;
 
 	uint16_t Info_Update_Frame;
-	uint8_t Offline_Flag;
+	uint8_t offline_flag;
 } DR16_Export_Data_t;
 
 typedef struct

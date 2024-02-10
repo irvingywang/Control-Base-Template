@@ -40,8 +40,8 @@ void Super_Capacitor_Send_Data(int16_t Target_Power)
 void Check_Super_Capacitor(void)
 {
 	if(Super_Capacitor.Info_Update_Frame < 1)
-		Super_Capacitor.Offline_Flag = 1;
+		Super_Capacitor.offline_flag = 1;
 	else
-		Super_Capacitor.Offline_Flag = 0;
+		Super_Capacitor.offline_flag = 0;
 	Super_Capacitor.Info_Update_Frame = 0;
 }

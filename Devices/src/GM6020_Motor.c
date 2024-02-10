@@ -4,78 +4,48 @@
  * @brief GM6020 communication
  * @version 1.0
  * @date 2022-07-08
- * 
+ *
  * @copyright Copyright (c) 2022
- * 
+ *
  */
+
 #include "GM6020_Motor.h"
 #include <stdio.h>
+#include "Motor.h"
 
-Motor_Init_t GM6020_Yaw;
-Motor_Init_t GM6020_Pitch;
+void GM6020_Get_Data(CAN_Export_Data_t RxMessage, Motor_Container_t *motor_container);
+void GM6020_Check(Motor_Container_t *motor_container);
+void GM6020_Send_Data(int16_t Pitch_Output, int16_t Yaw_Output);
 
-void GM6020_Yaw_Get_Data(CAN_Export_Data_t RxMessage);
-void GM6020_Pitch_Get_Data(CAN_Export_Data_t RxMessage);
-void GM6020_Gimbal_Send_Data(int16_t Pitch_Output, int16_t Yaw_Output);
-void Check_GM6020_Yaw(void);
-void Check_GM6020_Pitch(void);
-
-GM6020_Func_t GM6020_Func = GM6020_Func_GroundInit;
+GM6020_Func_t GM6020_Func = GM6020_Func_Init;
 #undef GM6020_Func_GroundInit
 
-//Get yaw motor data from CAN
-void GM6020_Yaw_Get_Data(CAN_Export_Data_t RxMessage)
+void GM6020_Get_Data(CAN_Export_Data_t RxMessage, Motor_Container_t *motor_container)
 {
-	GM6020_Yaw.Prev_Angle = GM6020_Yaw.Actual_Angle;
-	GM6020_Yaw.Actual_Angle = (int16_t)(RxMessage.CANx_Export_RxMessage[0] << 8 | RxMessage.CANx_Export_RxMessage[1]);
-  GM6020_Yaw.Actual_Speed = (int16_t)(RxMessage.CANx_Export_RxMessage[2] << 8 | RxMessage.CANx_Export_RxMessage[3]);
-  GM6020_Yaw.Actual_Current = (int16_t)(RxMessage.CANx_Export_RxMessage[4] << 8 | RxMessage.CANx_Export_RxMessage[5]);
-  GM6020_Yaw.Temperature = RxMessage.CANx_Export_RxMessage[6];
-	if((GM6020_Yaw.Actual_Angle - GM6020_Yaw.Prev_Angle) < -6500 )
-		GM6020_Yaw.Turn_Count++;
-	else if((GM6020_Yaw.Actual_Angle - GM6020_Yaw.Prev_Angle) > 6500)
-		GM6020_Yaw.Turn_Count--;
-	GM6020_Yaw.Total_Angle = GM6020_Yaw.Actual_Angle + (GM6020_MECH_ANGLE_MAX * GM6020_Yaw.Turn_Count);
-	GM6020_Yaw.Info_Update_Frame++;
+	motor_container->prev_angle = motor_container->actual_angle;
+	motor_container->actual_angle = (int16_t)(RxMessage.CANx_Export_RxMessage[0] << 8 | RxMessage.CANx_Export_RxMessage[1]);
+	motor_container->actual_speed = (int16_t)(RxMessage.CANx_Export_RxMessage[2] << 8 | RxMessage.CANx_Export_RxMessage[3]);
+	motor_container->actual_current = (int16_t)(RxMessage.CANx_Export_RxMessage[4] << 8 | RxMessage.CANx_Export_RxMessage[5]);
+	motor_container->temperature = RxMessage.CANx_Export_RxMessage[6];
+	if ((motor_container->actual_angle - motor_container->prev_angle) < -6500)
+		motor_container->turn_count++;
+	else if ((motor_container->actual_angle - motor_container->prev_angle) > 6500)
+		motor_container->turn_count--;
+	motor_container->total_angle = motor_container->actual_angle + (GM6020_MECH_ANGLE_MAX * motor_container->turn_count);
+	motor_container->info_update_frame++;
 }
 
-//Get pitch motor data from CAN
-void GM6020_Pitch_Get_Data(CAN_Export_Data_t RxMessage)
+// TODO send data and CAN refactor
+void GM6020_Send_Data(int16_t Pitch_Output, int16_t Yaw_Output)
 {
-	GM6020_Pitch.Prev_Angle = GM6020_Pitch.Actual_Angle;
-	GM6020_Pitch.Actual_Angle = (int16_t)(RxMessage.CANx_Export_RxMessage[0] << 8 | RxMessage.CANx_Export_RxMessage[1]);
-  GM6020_Pitch.Actual_Speed = (int16_t)(RxMessage.CANx_Export_RxMessage[2] << 8 | RxMessage.CANx_Export_RxMessage[3]);
-  GM6020_Pitch.Actual_Current = (int16_t)(RxMessage.CANx_Export_RxMessage[4] << 8 | RxMessage.CANx_Export_RxMessage[5]);
-  GM6020_Pitch.Temperature = RxMessage.CANx_Export_RxMessage[6];
-	if((GM6020_Pitch.Actual_Angle - GM6020_Pitch.Prev_Angle) < -6500 )
-		GM6020_Pitch.Turn_Count++;
-	else if((GM6020_Pitch.Actual_Angle - GM6020_Pitch.Prev_Angle) > 6500)
-		GM6020_Pitch.Turn_Count--;
-	GM6020_Pitch.Total_Angle = GM6020_Pitch.Actual_Angle + (GM6020_MECH_ANGLE_MAX * GM6020_Pitch.Turn_Count);
-	GM6020_Pitch.Info_Update_Frame++;
+	CAN_Func.CAN_0x2FF_Send_Data(&hcan1, 0, Pitch_Output, Yaw_Output, 0);
 }
 
-//Send gimbal data through specified identifier
-void GM6020_Gimbal_Send_Data(int16_t Pitch_Output,int16_t Yaw_Output)
+void GM6020_Check(Motor_Container_t *motor_container)
 {
-	CAN_Func.CAN_0x2FF_Send_Data(&hcan1,0,Pitch_Output,Yaw_Output,0);
-}
-
-
-void Check_GM6020_Yaw(void)
-{
-	if(GM6020_Yaw.Info_Update_Frame < 1)
-		GM6020_Yaw.Offline_Flag = 1;
+	if (motor_container->info_update_frame < 1)
+		motor_container->offline_flag = 1;
 	else
-		GM6020_Yaw.Offline_Flag = 0;
-	GM6020_Yaw.Info_Update_Frame = 0;
-}
-
-void Check_GM6020_Pitch(void)
-{
-	if(GM6020_Pitch.Info_Update_Frame < 1)
-		GM6020_Pitch.Offline_Flag = 1;
-	else
-		GM6020_Pitch.Offline_Flag = 0;
-	GM6020_Pitch.Info_Update_Frame = 0;
+		motor_container->offline_flag = 0;
+	motor_container->info_update_frame = 0;
 }

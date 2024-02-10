@@ -31,16 +31,16 @@ void M3508_Chassis_Get_Data(CAN_Export_Data_t RxMessage)
 	uint8_t ID;
   ID = (uint8_t)(RxMessage.CAN_RxHeader.StdId - M3508_CHASSIS_START_ID);
 	
-	M3508_Chassis[ID].Prev_Angle = M3508_Chassis[ID].Actual_Angle;
-  M3508_Chassis[ID].Actual_Angle = (int16_t)(RxMessage.CANx_Export_RxMessage[0] << 8 | RxMessage.CANx_Export_RxMessage[1]);
-  M3508_Chassis[ID].Actual_Speed = (int16_t)(RxMessage.CANx_Export_RxMessage[2] << 8 | RxMessage.CANx_Export_RxMessage[3]);
-  M3508_Chassis[ID].Actual_Current = (int16_t)(RxMessage.CANx_Export_RxMessage[4] << 8 | RxMessage.CANx_Export_RxMessage[5]);
-  M3508_Chassis[ID].Temperature = RxMessage.CANx_Export_RxMessage[6];
-	if((M3508_Chassis[ID].Actual_Angle - M3508_Chassis[ID].Prev_Angle) < -6500 )
-		M3508_Chassis[ID].Turn_Count++;
-	else if((M3508_Chassis[ID].Actual_Angle - M3508_Chassis[ID].Prev_Angle) > 6500)
-		M3508_Chassis[ID].Turn_Count--;
-	M3508_Chassis[ID].Total_Angle = M3508_Chassis[ID].Actual_Angle + (M3508_MECH_ANGLE_MAX * M3508_Chassis[ID].Turn_Count);
+	M3508_Chassis[ID].prev_angle = M3508_Chassis[ID].actual_angle;
+  M3508_Chassis[ID].actual_angle = (int16_t)(RxMessage.CANx_Export_RxMessage[0] << 8 | RxMessage.CANx_Export_RxMessage[1]);
+  M3508_Chassis[ID].actual_speed = (int16_t)(RxMessage.CANx_Export_RxMessage[2] << 8 | RxMessage.CANx_Export_RxMessage[3]);
+  M3508_Chassis[ID].actual_current = (int16_t)(RxMessage.CANx_Export_RxMessage[4] << 8 | RxMessage.CANx_Export_RxMessage[5]);
+  M3508_Chassis[ID].temperature = RxMessage.CANx_Export_RxMessage[6];
+	if((M3508_Chassis[ID].actual_angle - M3508_Chassis[ID].prev_angle) < -6500 )
+		M3508_Chassis[ID].turn_count++;
+	else if((M3508_Chassis[ID].actual_angle - M3508_Chassis[ID].prev_angle) > 6500)
+		M3508_Chassis[ID].turn_count--;
+	M3508_Chassis[ID].total_angle = M3508_Chassis[ID].actual_angle + (M3508_MECH_ANGLE_MAX * M3508_Chassis[ID].turn_count);
   M3508_Chassis[ID].Info_Update_Frame++;
 }
 
@@ -56,18 +56,18 @@ void M3508_Fric_Wheel_Get_Data(CAN_Export_Data_t RxMessage)
 	switch(RxMessage.CAN_RxHeader.StdId)
 	{
 		case M3508_FRIC_WHEEL_LEFT_ID:
-			M3508_Fric_Wheel[0].Actual_Angle = (int16_t)(RxMessage.CANx_Export_RxMessage[0] << 8 | RxMessage.CANx_Export_RxMessage[1]);
-			M3508_Fric_Wheel[0].Actual_Speed = (int16_t)(RxMessage.CANx_Export_RxMessage[2] << 8 | RxMessage.CANx_Export_RxMessage[3]);
-			M3508_Fric_Wheel[0].Actual_Current = (int16_t)(RxMessage.CANx_Export_RxMessage[4] << 8 | RxMessage.CANx_Export_RxMessage[5]);
-			M3508_Fric_Wheel[0].Temperature = RxMessage.CANx_Export_RxMessage[6];
+			M3508_Fric_Wheel[0].actual_angle = (int16_t)(RxMessage.CANx_Export_RxMessage[0] << 8 | RxMessage.CANx_Export_RxMessage[1]);
+			M3508_Fric_Wheel[0].actual_speed = (int16_t)(RxMessage.CANx_Export_RxMessage[2] << 8 | RxMessage.CANx_Export_RxMessage[3]);
+			M3508_Fric_Wheel[0].actual_current = (int16_t)(RxMessage.CANx_Export_RxMessage[4] << 8 | RxMessage.CANx_Export_RxMessage[5]);
+			M3508_Fric_Wheel[0].temperature = RxMessage.CANx_Export_RxMessage[6];
 		
 			M3508_Fric_Wheel[0].Info_Update_Frame++;
 			break;
 		case M3508_FRIC_WHEEL_RIGHT_ID:
-			M3508_Fric_Wheel[1].Actual_Angle = (int16_t)(RxMessage.CANx_Export_RxMessage[0] << 8 | RxMessage.CANx_Export_RxMessage[1]);
-			M3508_Fric_Wheel[1].Actual_Speed = (int16_t)(RxMessage.CANx_Export_RxMessage[2] << 8 | RxMessage.CANx_Export_RxMessage[3]);
-			M3508_Fric_Wheel[1].Actual_Current = (int16_t)(RxMessage.CANx_Export_RxMessage[4] << 8 | RxMessage.CANx_Export_RxMessage[5]);
-			M3508_Fric_Wheel[1].Temperature = RxMessage.CANx_Export_RxMessage[6];
+			M3508_Fric_Wheel[1].actual_angle = (int16_t)(RxMessage.CANx_Export_RxMessage[0] << 8 | RxMessage.CANx_Export_RxMessage[1]);
+			M3508_Fric_Wheel[1].actual_speed = (int16_t)(RxMessage.CANx_Export_RxMessage[2] << 8 | RxMessage.CANx_Export_RxMessage[3]);
+			M3508_Fric_Wheel[1].actual_current = (int16_t)(RxMessage.CANx_Export_RxMessage[4] << 8 | RxMessage.CANx_Export_RxMessage[5]);
+			M3508_Fric_Wheel[1].temperature = RxMessage.CANx_Export_RxMessage[6];
 		
 			M3508_Fric_Wheel[1].Info_Update_Frame++;
 			break;
@@ -85,9 +85,9 @@ void Check_M3508_Chassis(void)
 	for(int i = 0; i < 4; i++)
 	{
 		if(M3508_Chassis[i].Info_Update_Frame < 1)
-			M3508_Chassis[i].Offline_Flag = 1;
+			M3508_Chassis[i].offline_flag = 1;
 		else
-			M3508_Chassis[i].Offline_Flag = 0;
+			M3508_Chassis[i].offline_flag = 0;
 		M3508_Chassis[i].Info_Update_Frame = 0;
 	}
 }
@@ -97,9 +97,9 @@ void Check_M3508_Fric_Wheel(void)
 	for(int i = 0; i < 2; i++)
 	{
 		if(M3508_Fric_Wheel[i].Info_Update_Frame < 1)
-			M3508_Fric_Wheel[i].Offline_Flag = 1;
+			M3508_Fric_Wheel[i].offline_flag = 1;
 		else
-			M3508_Fric_Wheel[i].Offline_Flag = 0;
+			M3508_Fric_Wheel[i].offline_flag = 0;
 		M3508_Fric_Wheel[i].Info_Update_Frame = 0;
 	}
 }
